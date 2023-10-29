@@ -27,11 +27,28 @@ class CityView(ViewSet):
 
         # Step 3: Respond to the client with the JSON data and 200 status code
         return Response(serialized.data, status=status.HTTP_200_OK)
-
+    def create(self, request):
+        """Handle POST operations Returns
+        Response -- JSON serialized city instance
+        """
+        city = City.objects.create(name = request.data["name"])
+        serializer = CitySerializer(city)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def update(self, request, pk):
+        """handle PUT requests for cities
+        returns: reponse -- emopty body with 204 status code
+        """
+        city = City.objects.get(pk=pk)
+        city.name = request.data["name"]
+        city.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+    def destroy(self, request, pk):
+        city = City.objects.get(pk=pk)
+        city.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)    
 
 class CitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = City
         fields = ('id', 'name',)
-
